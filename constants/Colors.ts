@@ -10,6 +10,7 @@ export const Colors = {
   White:'#fff',
   Primary: '#000',
   Grey:'#7d7d7d',
+  Light_Grey:'#f2f2f2',
   light: {
     text: '#11181C',
     background: '#fff',

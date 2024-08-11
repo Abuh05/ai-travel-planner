@@ -10,43 +10,37 @@ export default function SignIn() {
   const navigation = useNavigation();
   const router = useRouter();
 
-
-  const [email, setEmail] = useState();
-  const [password, setPassword] = useState();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false); // State for password visibility
 
   useEffect(() => {
     navigation.setOptions({
       headerShown: false
-    })
-  }, [])
-
-
+    });
+  }, []);
 
   const OnSignInAccount = () => {
-    if (!email && !password) {
-
+    if (!email || !password) {
       ToastAndroid.show('Please enter Email & Password', ToastAndroid.LONG);
       return;
     }
     signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
-        // Signed in 
         const user = userCredential.user;
         ToastAndroid.show('Login Successfully', ToastAndroid.LONG);
-        router.replace('/mytrip')
-        console.log(user)
-        // ...
+        router.replace('/mytrip');
+        console.log(user);
       })
       .catch((error) => {
         const errorCode = error.code;
         const errorMessage = error.message;
-        console.log(errorMessage,error.code);
-        if(errorCode=='auth/invalid-credential'){
-          ToastAndroid.show('Invalid credentials', ToastAndroid.LONG)
+        console.log(errorMessage, errorCode);
+        if (errorCode === 'auth/invalid-credential') {
+          ToastAndroid.show('Invalid credentials', ToastAndroid.LONG);
         }
       });
-  }
-
+  };
 
   return (
     <View style={{
@@ -77,26 +71,40 @@ export default function SignIn() {
         marginTop: 10
       }}>You've been Missed!</Text>
 
-      <View style={{
-        marginTop: 50
-      }}>
+      <View style={{ marginTop: 50 }}>
         <Text>Email</Text>
-        <TextInput
-          style={styles.input}
-          onChangeText={(value) => setEmail(value)}
-          placeholder='Enter Email' />
+        <View style={styles.inputContainer}>
+          <TextInput
+            style={styles.input}
+            onChangeText={(value) => setEmail(value)}
+            placeholder='Enter Email'
+            value={email}
+            keyboardType='email-address'
+          />
+        </View>
       </View>
+      
       {/* Password */}
-      <View style={{
-        marginTop: 20
-      }}>
+      <View style={{ marginTop: 20 }}>
         <Text>Password</Text>
-        <TextInput
-          secureTextEntry={true}
-          style={styles.input}
-          onChangeText={(value) => setPassword(value)}
-          placeholder='Password' />
+        <View style={styles.inputContainer}>
+          <TextInput
+            secureTextEntry={!showPassword}
+            style={styles.input}
+            onChangeText={(value) => setPassword(value)}
+            placeholder='Password'
+            value={password}
+          />
+          <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={styles.iconContainer}>
+            <Ionicons 
+              name={showPassword ? "eye-off" : "eye"} 
+              size={24} 
+              color={Colors.Grey} 
+            />
+          </TouchableOpacity>
+        </View>
       </View>
+      
       {/* Sign In */}
       <TouchableOpacity onPress={OnSignInAccount} style={{
         padding: 20,
@@ -133,9 +141,20 @@ export default function SignIn() {
 
 const styles = StyleSheet.create({
   input: {
+    flex: 1,
     padding: 15,
     borderWidth: 1,
     borderRadius: 15,
     borderColor: Colors.Grey,
+  },
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderRadius: 15,
+    borderColor: Colors.Grey,
+  },
+  iconContainer: {
+    padding: 15,
   }
-})
+});
